@@ -80,9 +80,7 @@ const HomePage = () => {
                 <Heading level={3}>Install the package</Heading>
               </div>
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
-                <code>{`npm install @yashkharche/file-upload-library
-# or
-pnpm add @yourorg/file-upload-library`}</code>
+                <code>{`npm i bye-file`}</code>
               </pre>
             </div>
 
@@ -139,24 +137,6 @@ return (
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Heading level={1} className="text-white">
-            Ready to get started?
-          </Heading>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Explore all variants, configurations, and examples in our
-            comprehensive demo page.
-          </p>
-          <Link
-            to={"/demo"}
-            className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl"
-          >
-            Explore Demo & Examples
-          </Link>
-        </div>
-      </section>
-
       <footer className="py-12 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -168,24 +148,20 @@ return (
               primitives
             </p>
             <div className="flex justify-center space-x-6">
-              <a
-                href="#"
+              <Link
+                target="_blank"
+                to="https://github.com/Yash-KK/File-Component"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                Documentation
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                GitHub
-              </a>
-              <a
-                href="#"
+                Github
+              </Link>
+              <Link
+                target="_blank"
+                to="https://www.npmjs.com/package/bye-file"
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 npm Package
-              </a>
+              </Link>
             </div>
           </div>
         </div>
