@@ -1,5 +1,5 @@
 import React, { useReducer, useRef, useCallback, useState } from "react";
-import { Upload, Plus, Image } from "lucide-react";
+import { Upload, Plus, Image, X } from "lucide-react";
 import type {
   FileUploadProps,
   FileUploadConfig,
@@ -369,63 +369,96 @@ const FileUpload: React.FC<FileUploadProps> = ({
     [handleClick]
   );
 
-  const renderDropzone = () => (
-    <div
-      className={cn(
-        "border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer transition-colors",
-        state.isDragActive && "border-blue-500 bg-blue-50",
-        finalDisabled && "opacity-50 cursor-not-allowed",
-        config.theme?.borderStyle === "solid" && "border-solid",
-        config.theme?.borderStyle === "dotted" && "border-dotted"
-      )}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      onDragEnter={handleDrag}
-      onDragLeave={handleDrag}
-      onDragOver={handleDrag}
-      onDrop={handleDrop}
-      tabIndex={finalDisabled ? -1 : 0}
-      role="button"
-      aria-label={ariaLabel || config.labels?.dropzoneText}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        multiple={finalMultiple}
-        accept={finalAccept}
-        onChange={handleInputChange}
-        className="sr-only"
-        disabled={finalDisabled}
-        aria-describedby={ariaDescribedBy}
-      />
+  const renderDropzone = () => {
+    const uploadedFile = state.files?.[0];
+    const previewUrl = uploadedFile?.preview || null;
 
-      <div className="flex flex-col items-center gap-4">
-        {finalVariant === "image-preview" ? (
-          <Image className="w-12 h-12 text-gray-400" />
-        ) : (
-          <Upload className="w-12 h-12 text-gray-400" />
+    const showImagePreview = finalVariant === "image-preview" && previewUrl;
+
+    return (
+      <div
+        className={cn(
+          "relative",
+          finalDisabled && "opacity-50 cursor-not-allowed"
         )}
+      >
+        {showImagePreview ? (
+          <div className="relative aspect-[4/3] max-w-full overflow-hidden rounded-lg border">
+            <img
+              src={previewUrl}
+              alt={uploadedFile.name || "Uploaded image"}
+              className="h-full w-full object-contain"
+            />
+            <button
+              type="button"
+              onClick={() => handleRemoveFile(uploadedFile.id)}
+              className="absolute top-2 right-2 z-10 flex size-8 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+              aria-label="Remove image"
+            >
+              <X className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </div>
+        ) : (
+          <div
+            className={cn(
+              "border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer transition-colors",
+              state.isDragActive && "border-blue-500 bg-blue-50",
+              finalDisabled && "opacity-50 cursor-not-allowed",
+              config.theme?.borderStyle === "solid" && "border-solid",
+              config.theme?.borderStyle === "dotted" && "border-dotted"
+            )}
+            onClick={handleClick}
+            onKeyDown={handleKeyDown}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            tabIndex={finalDisabled ? -1 : 0}
+            role="button"
+            aria-label={ariaLabel || config.labels?.dropzoneText}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              multiple={finalMultiple}
+              accept={finalAccept}
+              onChange={handleInputChange}
+              className="sr-only"
+              disabled={finalDisabled}
+              aria-describedby={ariaDescribedBy}
+            />
 
-        <div>
-          <p className="text-lg font-medium text-gray-900">
-            {state.isDragActive
-              ? config.labels?.dragActiveText
-              : config.labels?.dropzoneText}
-          </p>
-          {config.labels?.maxSizeText && (
-            <p className="text-sm text-gray-500 mt-1">
-              {config.labels.maxSizeText}
-            </p>
-          )}
-          {config.acceptedFileTypes && config.acceptedFileTypes.length > 0 && (
-            <p className="text-xs text-gray-400 mt-1">
-              Accepted types: {config.acceptedFileTypes.join(", ")}
-            </p>
-          )}
-        </div>
+            <div className="flex flex-col items-center gap-4">
+              {finalVariant === "image-preview" ? (
+                <Image className="w-12 h-12 text-gray-400" />
+              ) : (
+                <Upload className="w-12 h-12 text-gray-400" />
+              )}
+
+              <div>
+                <p className="text-lg font-medium text-gray-900">
+                  {state.isDragActive
+                    ? config.labels?.dragActiveText
+                    : config.labels?.dropzoneText}
+                </p>
+                {config.labels?.maxSizeText && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    {config.labels.maxSizeText}
+                  </p>
+                )}
+                {config.acceptedFileTypes &&
+                  config.acceptedFileTypes.length > 0 && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Accepted types: {config.acceptedFileTypes.join(", ")}
+                    </p>
+                  )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderButton = () => (
     <div className="inline-flex">
