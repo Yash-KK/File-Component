@@ -5,7 +5,7 @@ import type {
   FileUploadConfig,
   FileWithPreview,
   FileUploadState,
-} from "@/components/file-upload/types.ts";
+} from "@/components/file-upload/file-upload.types.ts";
 import { UploadService } from "@/lib/file-upload/upload-service.ts";
 import {
   cn,
@@ -445,7 +445,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         onKeyDown={handleKeyDown}
         disabled={finalDisabled}
         className={cn(
-          "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
+          "inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-black/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer",
           config.theme?.size === "sm" && "px-3 py-1.5 text-sm",
           config.theme?.size === "lg" && "px-6 py-3 text-lg",
           config.theme?.size === "xl" && "px-8 py-4 text-xl"

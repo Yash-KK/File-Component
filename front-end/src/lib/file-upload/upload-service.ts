@@ -1,4 +1,4 @@
-import type { FileWithPreview } from "@/components/file-upload/types.ts";
+import type { FileWithPreview } from "@/components/file-upload/file-upload.types";
 
 export class UploadService {
   static async uploadFile(

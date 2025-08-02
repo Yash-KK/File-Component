@@ -3,7 +3,7 @@ import { X, File, Image, CheckCircle, AlertCircle } from "lucide-react";
 import type {
   FileWithPreview,
   FileUploadConfig,
-} from "@/components/file-upload/types.ts";
+} from "@/components/file-upload/file-upload.types";
 import { cn, formatFileSize } from "@/lib/file-upload/helper.ts";
 import ToastComponent from "@/components/file-upload/toast.tsx";
 
@@ -45,9 +45,7 @@ const FileUploadPreview: React.FC<FileUploadPreviewProps> = ({
     <>
       <div
         className={cn(
-          "relative flex items-center gap-3 p-3 border rounded-lg bg-gray-50",
-          file.status === "error" && "border-red-200 bg-red-50",
-          file.status === "success" && "border-green-200 bg-green-50"
+          "relative flex items-center gap-3 p-3 border rounded-lg bg-gray-50"
         )}
       >
         <div className="flex-shrink-0">
