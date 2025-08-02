@@ -2,7 +2,6 @@
 
 [![npm version](https://img.shields.io/npm/v/bye-file.svg)](https://www.npmjs.com/package/bye-file)
 [![npm downloads](https://img.shields.io/npm/dm/bye-file.svg)](https://www.npmjs.com/package/bye-file)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 > A sleek, config-driven file upload component with zero fuss and full flexibility. Drag it, drop it, done.
 
@@ -235,10 +234,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the ISC License.
 
 ## 🔗 Links
 
