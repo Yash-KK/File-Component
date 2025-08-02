@@ -18,6 +18,7 @@ export interface FileUploadConfig {
   multiple?: boolean;
   showPreviews?: boolean;
   disabled?: boolean;
+  allowDuplicates?: boolean;
   theme?: {
     size?: "sm" | "md" | "lg" | "xl";
     radius?: "none" | "sm" | "md" | "lg" | "full";
@@ -32,6 +33,7 @@ export interface FileUploadConfig {
     removeText?: string;
     tooManyFilesText?: string;
     invalidFileTypeText?: string;
+    duplicateFileText?: string;
   };
 }
 
@@ -52,6 +54,7 @@ export interface FileUploadProps {
   maxSize?: number;
   maxFiles?: number;
   disabled?: boolean;
+  allowDuplicates?: boolean;
   className?: string;
   "aria-label"?: string;
   "aria-describedby"?: string;

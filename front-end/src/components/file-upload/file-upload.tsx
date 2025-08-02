@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useCallback } from "react";
+import React, { useReducer, useRef, useCallback, useState } from "react";
 import { Upload, Plus, Image } from "lucide-react";
 import type {
   FileUploadProps,
@@ -14,6 +14,7 @@ import {
   validateFile,
 } from "@/lib/file-upload/helper.ts";
 import FileUploadPreview from "@/components/file-upload/file-upload-preview.tsx";
+import ToastComponent from "@/components/file-upload/toast.tsx";
 
 const addFiles = (files: FileWithPreview[]) => ({
   type: "ADD_FILES" as const,
@@ -35,6 +36,11 @@ const updateFileStatus = (
   payload: { fileId, status, progress, error },
 });
 
+const clearFileError = (fileId: string) => ({
+  type: "CLEAR_FILE_ERROR" as const,
+  payload: fileId,
+});
+
 const setDragActive = (isDragActive: boolean) => ({
   type: "SET_DRAG_ACTIVE" as const,
   payload: isDragActive,
@@ -45,12 +51,18 @@ const setError = (error: string | null) => ({
   payload: error,
 });
 
+const clearError = () => ({
+  type: "CLEAR_ERROR" as const,
+});
+
 type Action =
   | ReturnType<typeof addFiles>
   | ReturnType<typeof removeFile>
   | ReturnType<typeof updateFileStatus>
   | ReturnType<typeof setDragActive>
-  | ReturnType<typeof setError>;
+  | ReturnType<typeof setError>
+  | ReturnType<typeof clearError>
+  | ReturnType<typeof clearFileError>;
 
 const defaultConfig: FileUploadConfig = {
   variant: "dropzone",
@@ -71,10 +83,12 @@ const defaultConfig: FileUploadConfig = {
     removeText: "Remove file",
     tooManyFilesText: "Too many files. Maximum 5 files allowed.",
     invalidFileTypeText: "Invalid file type. Please upload a valid file.",
+    duplicateFileText: "File already exists. Duplicate files are not allowed.",
   },
   multiple: false,
   showPreviews: true,
   disabled: false,
+  allowDuplicates: false,
 };
 
 const fileUploadReducer = (
@@ -103,6 +117,15 @@ const fileUploadReducer = (
     case "SET_ERROR": {
       return { ...state, error: action.payload };
     }
+    case "CLEAR_ERROR": {
+      return { ...state, error: null };
+    }
+    case "CLEAR_FILE_ERROR": {
+      const updatedFiles = state.files.map((file) =>
+        file.id === action.payload ? { ...file, error: undefined } : file
+      );
+      return { ...state, files: updatedFiles };
+    }
     default:
       return state;
   }
@@ -115,11 +138,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onError,
   multiple,
   accept,
-
   maxSize,
   maxFiles,
   className,
   disabled,
+  allowDuplicates,
   "aria-label": ariaLabel,
   "aria-describedby": ariaDescribedBy,
   ...props
@@ -131,6 +154,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const finalMaxFiles = maxFiles ?? config.maxFiles ?? 5;
   const finalAccept = accept || config.acceptedFileTypes?.join(",");
   const finalDisabled = disabled ?? config.disabled ?? false;
+  const finalAllowDuplicates =
+    allowDuplicates ?? config.allowDuplicates ?? false;
 
   const [state, dispatch] = useReducer(fileUploadReducer, {
     files: [],
@@ -139,20 +164,56 @@ const FileUpload: React.FC<FileUploadProps> = ({
     error: null,
   });
 
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"error" | "warning" | "success">(
+    "error"
+  );
+
   const inputRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef(0);
+
+  const showToast = useCallback(
+    (message: string, type: "error" | "warning" | "success" = "error") => {
+      setToastMessage(message);
+      setToastType(type);
+      setToastOpen(true);
+    },
+    []
+  );
 
   const processFiles = useCallback(
     async (files: File[]): Promise<FileWithPreview[]> => {
       const validFiles: FileWithPreview[] = [];
-
+      console.log("files: ", files);
       for (const file of files) {
         if (state.files.length + validFiles.length >= finalMaxFiles) {
-          dispatch(
-            setError(config.labels?.tooManyFilesText || "Too many files")
-          );
-          onError?.(config.labels?.tooManyFilesText || "Too many files");
+          const errorMessage =
+            config.labels?.tooManyFilesText || "Too many files";
+          dispatch(setError(errorMessage));
+          showToast(errorMessage, "error");
+          onError?.(errorMessage);
           break;
+        }
+
+        // Check for duplicate files if not allowed
+        if (!finalAllowDuplicates) {
+          const isDuplicate = state.files.some(
+            (existingFile) =>
+              existingFile.name === file.name &&
+              existingFile.size === file.size &&
+              existingFile.type === file.type
+          );
+
+          if (isDuplicate) {
+            const duplicateError =
+              config.labels?.duplicateFileText ||
+              "File already exists. Duplicate files are not allowed.";
+            dispatch(setError(duplicateError));
+            showToast(duplicateError, "error");
+            onError?.(duplicateError);
+            continue;
+          }
         }
 
         const error = validateFile(
@@ -162,6 +223,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         );
         if (error) {
           dispatch(setError(error));
+          showToast(error, "error");
           onError?.(error);
           continue;
         }
@@ -187,29 +249,35 @@ const FileUpload: React.FC<FileUploadProps> = ({
       state.files.length,
       finalMaxFiles,
       finalMaxSize,
+      finalAllowDuplicates,
       config.acceptedFileTypes,
       config.labels,
       onError,
+      showToast,
     ]
   );
 
-  const uploadFiles = useCallback(async (filesToUpload: FileWithPreview[]) => {
-    for (const file of filesToUpload) {
-      try {
-        dispatch(updateFileStatus(file.id, "uploading", 0));
+  const uploadFiles = useCallback(
+    async (filesToUpload: FileWithPreview[]) => {
+      for (const file of filesToUpload) {
+        try {
+          dispatch(updateFileStatus(file.id, "uploading", 0));
 
-        await UploadService.uploadFile(file, (progress) => {
-          dispatch(updateFileStatus(file.id, "uploading", progress));
-        });
+          await UploadService.uploadFile(file, (progress) => {
+            dispatch(updateFileStatus(file.id, "uploading", progress));
+          });
 
-        dispatch(updateFileStatus(file.id, "success", 100));
-      } catch (error) {
-        dispatch(
-          updateFileStatus(file.id, "error", undefined, "Upload failed")
-        );
+          dispatch(updateFileStatus(file.id, "success", 100));
+          showToast(`Successfully uploaded ${file.name}`, "success");
+        } catch (error) {
+          const errorMessage = "Upload failed";
+          dispatch(updateFileStatus(file.id, "error", undefined, errorMessage));
+          showToast(`Failed to upload ${file.name}: ${errorMessage}`, "error");
+        }
       }
-    }
-  }, []);
+    },
+    [showToast]
+  );
 
   const handleFiles = useCallback(
     async (newFiles: File[]) => {
@@ -235,6 +303,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       const files = Array.from(e.target.files || []);
       if (files.length > 0) {
         handleFiles(files);
+        e.target.value = "";
       }
     },
     [handleFiles]
@@ -283,6 +352,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   const handleClick = useCallback(() => {
     if (!finalDisabled) {
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
       inputRef.current?.click();
     }
   }, [finalDisabled]);
@@ -431,12 +503,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     <div className={cn("relative", className)} {...props}>
       {renderVariant()}
 
-      {state.error && (
-        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{state.error}</p>
-        </div>
-      )}
-
       {config.showPreviews && state.files.length > 0 && (
         <div className="mt-4 space-y-2">
           {state.files.map((file) => (
@@ -449,6 +515,20 @@ const FileUpload: React.FC<FileUploadProps> = ({
           ))}
         </div>
       )}
+
+      <ToastComponent
+        open={toastOpen}
+        onOpenChange={setToastOpen}
+        title={
+          toastType === "error"
+            ? "Error"
+            : toastType === "warning"
+            ? "Warning"
+            : "Success"
+        }
+        message={toastMessage}
+        type={toastType}
+      />
     </div>
   );
 };

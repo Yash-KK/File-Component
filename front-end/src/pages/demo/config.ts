@@ -11,6 +11,7 @@ export const presetConfigs = {
     labels: { dropzoneText: "Drop your files here" },
     multiple: false,
     showPreviews: true,
+    allowDuplicates: false,
   },
   imageOnly: {
     variant: "image-preview" as const,
@@ -27,6 +28,7 @@ export const presetConfigs = {
     },
     multiple: true,
     showPreviews: true,
+    allowDuplicates: false,
   },
   compact: {
     variant: "compact" as const,
@@ -39,6 +41,7 @@ export const presetConfigs = {
     },
     multiple: false,
     showPreviews: false,
+    allowDuplicates: false,
   },
   button: {
     variant: "button" as const,
@@ -52,5 +55,24 @@ export const presetConfigs = {
     labels: { buttonText: "Upload Documents" },
     multiple: true,
     showPreviews: true,
+    allowDuplicates: false,
+  },
+  allowDuplicates: {
+    variant: "dropzone" as const,
+    maxFileSize: 5242880,
+    acceptedFileTypes: [".jpg", ".png", ".pdf"],
+    theme: {
+      size: "md" as const,
+      radius: "md" as const,
+      borderStyle: "dashed" as const,
+    },
+    labels: {
+      dropzoneText: "Drop your files here (duplicates allowed)",
+      duplicateFileText:
+        "File already exists. Duplicate files are not allowed.",
+    },
+    multiple: true,
+    showPreviews: true,
+    allowDuplicates: true,
   },
 };

@@ -5,6 +5,7 @@ import type {
 } from "@/components/file-upload/types.ts";
 import FileUpload from "@/components/file-upload/file-upload.tsx";
 import { presetConfigs } from "@/pages/demo/config.ts";
+import { configProps, PropsTable } from "@/components/props-table/props-table";
 
 const Demo = () => {
   const [configText, setConfigText] = useState(
@@ -34,7 +35,16 @@ const Demo = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">Header for later</div>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            File Upload Component Demo
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            A comprehensive, accessible, and config-driven file upload component
+            library with multiple variants and extensive customization options.
+          </p>
+        </div>
+
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">
             Variant Examples
@@ -78,6 +88,101 @@ const Demo = () => {
               <FileUpload
                 config={presetConfigs.compact}
                 onFilesChange={(files) => console.log("Compact files:", files)}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+            Duplicate Files Examples
+          </h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Duplicates Not Allowed (Default)
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Try uploading the same file twice - it will show an error
+                message.
+              </p>
+              <FileUpload
+                config={presetConfigs.basic}
+                onFilesChange={(files) => console.log("Basic files:", files)}
+                onError={(error) => console.log("Error:", error)}
+              />
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Duplicates Allowed
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                You can upload the same file multiple times.
+              </p>
+              <FileUpload
+                config={presetConfigs.allowDuplicates}
+                onFilesChange={(files) =>
+                  console.log("Allow duplicates files:", files)
+                }
+                onError={(error) => console.log("Error:", error)}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+            Toast Notifications
+          </h2>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Toast Notifications Demo
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              The file upload component now uses Radix UI Toast for all error,
+              warning, and success messages. Try uploading files to see the
+              toast notifications in action.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Error Toasts</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• File validation errors</li>
+                  <li>• Duplicate file detection</li>
+                  <li>• Upload failures</li>
+                  <li>• File size/type restrictions</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">
+                  Success Toasts
+                </h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Successful file uploads</li>
+                  <li>• File processing completion</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <FileUpload
+                config={{
+                  ...presetConfigs.basic,
+                  labels: {
+                    ...presetConfigs.basic.labels,
+                    dropzoneText:
+                      "Try uploading files to see toast notifications",
+                  },
+                }}
+                onFilesChange={(files) =>
+                  console.log("Toast demo files:", files)
+                }
+                onError={(error) => console.log("Toast demo error:", error)}
               />
             </div>
           </div>
@@ -156,73 +261,7 @@ const Demo = () => {
             Configuration Options
           </h2>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Property
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Default
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Description
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200 text-sm">
-                  <tr>
-                    <td className="px-6 py-4 font-mono">variant</td>
-                    <td className="px-6 py-4 text-gray-600">
-                      'button' | 'dropzone' | 'compact' | 'image-preview' |
-                      'multi-file'
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">'dropzone'</td>
-                    <td className="px-6 py-4 text-gray-600">
-                      Upload component variant
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-mono">maxFileSize</td>
-                    <td className="px-6 py-4 text-gray-600">number</td>
-                    <td className="px-6 py-4 text-gray-600">10485760</td>
-                    <td className="px-6 py-4 text-gray-600">
-                      Maximum file size in bytes
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-mono">acceptedFileTypes</td>
-                    <td className="px-6 py-4 text-gray-600">string[]</td>
-                    <td className="px-6 py-4 text-gray-600">[]</td>
-                    <td className="px-6 py-4 text-gray-600">
-                      Accepted file extensions or MIME types
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-mono">multiple</td>
-                    <td className="px-6 py-4 text-gray-600">boolean</td>
-                    <td className="px-6 py-4 text-gray-600">false</td>
-                    <td className="px-6 py-4 text-gray-600">
-                      Allow multiple file selection
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 font-mono">showPreviews</td>
-                    <td className="px-6 py-4 text-gray-600">boolean</td>
-                    <td className="px-6 py-4 text-gray-600">true</td>
-                    <td className="px-6 py-4 text-gray-600">
-                      Show file previews after selection
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <PropsTable data={configProps} />
         </section>
 
         <section>
@@ -264,6 +303,26 @@ export default function ConfiguredUpload() {
       config={config}
       onFilesChange={(files) => handleUpload(files)}
       onError={(error) => showError(error)}
+    />
+  )
+}`}
+              </pre>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium text-gray-900 mb-3">
+                Allow Duplicates Usage
+              </h3>
+              <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto">
+                {`import { FileUpload } from '@/components/file-upload'
+
+export default function DuplicateUpload() {
+  return (
+    <FileUpload
+      allowDuplicates={true}
+      multiple={true}
+      onFilesChange={(files) => console.log(files)}
+      onError={(error) => console.error(error)}
     />
   )
 }`}
