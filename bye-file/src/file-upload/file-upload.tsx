@@ -1,20 +1,16 @@
 import React, { useReducer, useRef, useCallback, useState } from "react";
 import { Upload, Plus, Image } from "lucide-react";
+
+import { cn, createFilePreview, generateFileId, validateFile } from "./helper";
+import FileUploadPreview from "./file-upload-preview";
+import ToastComponent from "./toast";
 import type {
   FileUploadProps,
   FileUploadConfig,
   FileWithPreview,
   FileUploadState,
-} from "@/components/file-upload/file-upload.types.ts";
-import { UploadService } from "@/lib/file-upload/upload-service.ts";
-import {
-  cn,
-  createFilePreview,
-  generateFileId,
-  validateFile,
-} from "@/lib/file-upload/helper.ts";
-import FileUploadPreview from "@/components/file-upload/file-upload-preview.tsx";
-import ToastComponent from "@/components/file-upload/toast.tsx";
+} from "./file-upload.types";
+import { UploadService } from "./upload-service";
 
 const addFiles = (files: FileWithPreview[]) => ({
   type: "ADD_FILES" as const,

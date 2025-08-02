@@ -1,0 +1,8 @@
+node_modules
+src
+vite.config.ts
+tsconfig.json
+*.test.tsx
+*.spec.tsx
+.eslintrc
+.prettierrc

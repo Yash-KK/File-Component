@@ -1,0 +1,25 @@
+# Node dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific
+.DS_Store
+
+# IDE/editor configs
+.vscode/
+.idea/
+
+# Environment files (if any)
+.env
+.env.local
+.env.*.local
+
+# Tailwind cache (optional)
+.tailwind-cache/

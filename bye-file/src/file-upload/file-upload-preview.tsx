@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import { X, File, Image, CheckCircle, AlertCircle } from "lucide-react";
-import type {
-  FileWithPreview,
-  FileUploadConfig,
-} from "@/components/file-upload/file-upload.types";
-import { cn, formatFileSize } from "@/lib/file-upload/helper.ts";
-import ToastComponent from "@/components/file-upload/toast.tsx";
+import type { FileWithPreview, FileUploadConfig } from "./file-upload.types";
+import { cn, formatFileSize } from "./helper";
+import ToastComponent from "./toast";
 
 interface FileUploadPreviewProps {
   file: FileWithPreview;
